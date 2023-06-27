@@ -1,0 +1,40 @@
+.downloads{
+    position: absolute;
+    top: 7rem;
+    width: 80vw;
+    left: 10vw;
+    text-align: center;
+    background: linear-gradient(45deg, #39861f, #0f31ad);
+}
+.liItem{
+    list-style: none;
+    display: grid;
+    padding: 5px;
+    box-shadow: 0 2px 5px black;
+    font-weight: 600;
+    width: 60vw;
+    margin: 1rem auto;
+    background-color: #000;
+    color: aliceblue;
+    grid-template-columns: auto 10vw auto;
+    justify-content: space-around;
+}    
+
+@media screen and (max-width:700px) {
+    .downloads{
+        width: 95vw;
+        left: 2.5vw;
+    }
+    .liItem{
+        width: 85vw;
+    
+    }  
+}
+
+@media screen and (max-width:450px) {
+    .liItem{
+        width: 85vw;
+        grid-template-columns:auto ;
+
+    }  
+}

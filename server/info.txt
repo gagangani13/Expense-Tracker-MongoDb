@@ -1,0 +1,1 @@
+Move all the DB calls like Expense.findOne etc., Network Calls like s3bucket.upload etc. into the service folder for clean up purpose.

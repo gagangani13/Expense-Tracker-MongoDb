@@ -1,0 +1,15 @@
+.paginate{
+    position: relative;
+    top: 2vh;
+    width: 25vw;
+    text-align-last: center;
+    margin: auto;
+    display: grid;
+    justify-content: center;
+    margin-bottom: 9rem;
+    height: 2rem;
+    grid-template-columns: auto auto auto auto auto auto;
+}
+.selection{
+    width: 5rem;
+}

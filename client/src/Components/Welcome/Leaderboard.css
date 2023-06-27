@@ -1,0 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Geologica:wght@300&family=Orbitron:wght@500&display=swap");
+#leaderH1 {
+  font-family: "Cherry Bomb One", cursive;
+}
+#leaderboard {
+  position: absolute;
+  top: 10rem;
+  width: 50vw;
+  left: 25vw;
+  text-align: center;
+  display: grid;
+  justify-content: center;
+  background: linear-gradient(45deg, #c20267cf, #a81a1ac4);
+  padding: 2rem;
+  box-shadow: 0 2px 5px black;
+  color: aliceblue;
+}
+
+#listItem {
+  display: grid;
+  grid-template-columns: 5vw 30vw 5vw;
+  background-color: #282432;
+  margin: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 5px black;
+  font-weight: bold;
+  border-radius: 5px;
+  width: 45vw;
+}
+#spanLeaderboard {
+  text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+  #leaderboard {
+    width: 80vw;
+    left: 10vw;
+  }
+
+  #listItem {
+    grid-template-columns: 5vw 30vw 5vw;
+    width: 70vw;
+    justify-content: space-around;
+  }
+}

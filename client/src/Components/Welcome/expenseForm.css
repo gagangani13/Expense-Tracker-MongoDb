@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Geologica:wght@300&family=Orbitron:wght@500&display=swap');
+.form{
+    margin: 1rem 0rem;
+    background: linear-gradient(45deg, black, #901e1e);
+    padding: 1rem;
+    border-radius: 5px;
+    color: black;
+    display: grid;
+    grid-template-columns: 10vw auto auto 10vw auto auto;
+    column-gap: 5px;
+}
+
+.welcomeLayout{
+    position: absolute;
+    top: 8rem;
+    text-align: center;
+    width: 80vw;
+    left: 10vw;
+    font-family: 'Geologica', sans-serif;
+}
+
+h3{
+    font-family: 'Cherry Bomb One', cursive;
+    color: beige;
+}
+
+.expenseItem{
+    background: linear-gradient(45deg, black, #b64f4f);
+    color: bisque;
+    display: grid;
+    grid-template-columns: 10vw 5vw  30vw 5vw auto auto;
+    text-align: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.button{
+    padding: 5px;
+    width: 30px;
+    border-radius: 5px;
+}
+
+
+@media screen and (max-width:700px) {
+    .form{
+        grid-template-columns: auto;
+        row-gap: 10px;
+    }
+    .expenseItem{
+        grid-template-columns: auto auto  auto auto auto auto;
+    }
+}
+
+@media screen and (max-width:500px) {
+    .expenseItem{
+        background: linear-gradient(45deg, black, #b64f4f);
+        color: bisque;
+        display: grid;
+        grid-template-columns: auto;
+        text-align: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        padding: 5px;
+        row-gap: 1rem;
+    }
+    .button{
+        padding: 10px;
+        width: 20vw;
+    }
+}
