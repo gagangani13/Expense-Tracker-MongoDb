@@ -82,7 +82,7 @@ const LOGIN = () => {
           dispatch(authAction.loginHandler());
           dispatch(authAction.setToken(token));
           dispatch(authAction.setUserId(userId));
-          dispatch(authAction.setActivatePremium(premium))
+          dispatch(authAction.setActivatePremium(JSON.parse(premium)))
         } else {
           throw new Error();
         }

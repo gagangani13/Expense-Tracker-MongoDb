@@ -26,6 +26,7 @@ module.exports.newUser = async (req, res, next) => {
         password: result,
         name: name,
         totalExpense: 0,
+        premium:false
       });
       await createUser.save()
       res.status(201).json({ message: "User Added" });

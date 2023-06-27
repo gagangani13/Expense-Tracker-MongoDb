@@ -53,7 +53,7 @@ const ExpenseForm = () => {
             amount: expense[item].amount,
             description: expense[item].description,
             category: expense[item].category,
-            expenseId: expense[item].id,
+            expenseId: expense[item]._id,
             date: expense[item].date,
           });
         }
@@ -105,7 +105,7 @@ const ExpenseForm = () => {
         if (data.ok) {
           const editArray = expenses.map((item) => {
             console.log(item.expenseId, editing);
-            if (item.expenseId === Number(editing)) {
+            if (item.expenseId === (editing)) {
               return {
                 expenseId: editing,
                 amount: amountRef.current.value,
@@ -129,7 +129,7 @@ const ExpenseForm = () => {
   }
   async function deleteExpense(e) {
     setLoad(true);
-    const key = Number(e.target.parentElement.id);
+    const key = e.target.parentElement.id;
     console.log(userId, key);
     const response = await axios.delete(
       `http://localhost:5000/deleteExpense/${key}`,

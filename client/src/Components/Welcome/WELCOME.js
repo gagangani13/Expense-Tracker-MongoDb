@@ -18,7 +18,10 @@ const navbarVariant = {
     x: 0,
     fontWeight: "bold",
     transition: {
-      yoyo: Infinity, //yoyo is a repeating key, you can set to repeat n no of times ex-5 or infinte
+      repeat:Infinity,
+      type:'tween',
+      duration:2,
+      repeatType:"reverse"
     },
   },
 };
@@ -28,13 +31,11 @@ const WELCOME = () => {
   useEffect(() => {
     const idToken = localStorage.getItem("idToken");
     const userId = localStorage.getItem("userId");
-    const activatePremium = localStorage.getItem("premium");
     if (idToken && userId) {
       dispatch(authAction.loginHandler());
       dispatch(authAction.setToken(idToken));
       dispatch(authAction.setUserId(userId));
-      activatePremium !== "null" &&
-        dispatch(authAction.setActivatePremium(true));
+      verifyPremium()
     }
     // eslint-disable-next-line
   }, []);
@@ -140,7 +141,20 @@ const WELCOME = () => {
   function showMenu() {
     setMenu(!menu);
   }
-
+  async function verifyPremium() {
+    const response=await axios.get(`http://localhost:5000/verifyPremium`,{headers:{'Authorization':idToken}})
+    const data=await response.data
+    try {
+      if(!data.ok){
+        throw new Error()
+      }
+      dispatch(authAction.setActivatePremium(true))
+      localStorage.setItem('premium',true)
+    } catch (error) {
+      dispatch(authAction.setActivatePremium(false))
+      localStorage.setItem('premium',false)
+    }
+  }
   return (
     <>
       <div className="background"></div>
@@ -159,17 +173,16 @@ const WELCOME = () => {
                     transition={{ type: "tween", stiffness: 100 }}
                     exit={{y:'-100vw'}}
                     >
-                      {activatePremium && (
                         <motion.span
                         variants={navbarVariant}
                         whileHover="whileHover"
                         >
                           {<NavLink onClick={showExpense}>ADD EXPENSE</NavLink>}
                         </motion.span>
-                      )}
+                      
                       {!activatePremium && (
                         <motion.div variants={navbarVariant} whileHover="whileHover">
-                          <NavLink onClick={activation}>Activate Premium</NavLink>
+                          <NavLink onClick={activation}>ACTIVATE PREMIUM</NavLink>
                         </motion.div>
                       )}
                       {activatePremium && (
@@ -224,6 +237,7 @@ const WELCOME = () => {
               {!menu&&addExpense && <ExpenseForm />}
               {!menu&&leaderboard && <Leaderboard />}
               {!menu&&viewDownloads && <Downloads />}
+              {console.log(activatePremium)}
             </>
           </>
         )}

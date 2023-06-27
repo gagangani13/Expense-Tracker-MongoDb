@@ -1,7 +1,6 @@
-const database = require("../database/database")
-const { Download } = require("../model/download")
-const { Expense } = require("../model/expense")
-const { User } = require("../model/user")
+const  Download = require("../model/download")
+const  Expense = require("../model/expense")
+const  User = require("../model/user")
 const AWS=require('aws-sdk');
 require('dotenv').config();
 //Leaderboard
@@ -17,14 +16,12 @@ module.exports.getAllExpenses=async(req,res,next)=>{
         //     group:['user.id'], //Grouped according to id column in users table
         //     order:[['totalAmount','DESC']] // Descending order related to totalAmount value
         // })
-        const allExpenses=await User.findAll({
-            attributes:['name','totalExpense'],
-            order:[['totalExpense','DESC']]
-        })
+        const allExpenses=await User.find().select('name totalExpense').sort({totalExpense:-1})
         res.status(200).send({expenses:allExpenses})
 
     } catch (error) {
         console.log(error);
+        res.send({error:error,ok:false})
     }
     
 }
@@ -60,15 +57,16 @@ async function uploadToS3(data,filename) {
 
 module.exports.downloadAWS=async(req,res,next)=>{
     try {
-        const getExpenses=await Expense.findAll({where:{UserId:req.userId}})
+        const getExpenses=await Expense.find({UserId:req.userId})
         const stringifyExpense=JSON.stringify(getExpenses)
         const filename=`Expenses/${req.userId}/${new Date()}.txt`
         const fileUrl=await uploadToS3(stringifyExpense,filename)
-        const downloadTable=await Download.create({
+        const downloadTable=new Download({
             downloadLink:fileUrl,
             UserId:req.userId,
             date:new Date()
         })
+        const save=await downloadTable.save()
         res.status(200).send({ok:true,fileUrl,stringifyExpense})
     } catch (error) {
         res.send({message:error,ok:false})
@@ -77,9 +75,22 @@ module.exports.downloadAWS=async(req,res,next)=>{
 
 module.exports.viewDownloads=async(req,res,next)=>{
     try {
-        const downloads=await Download.findAll({where:{UserId:req.userId},order:[['date','DESC']]})
+        const downloads=await Download.find({UserId:req.userId}).sort({date:-1})
         res.send({ok:true,downloads:downloads})
     } catch (error) {
         res.send({ok:false,message:'Error'})
+    }
+}
+
+module.exports.verifyPremium=async(req,res,next)=>{
+    try {
+        const getUser=await User.findById(req.userId)
+        if (getUser.premium) {
+            res.send({ok:true})
+        }else{
+            throw new Error()
+        }
+    } catch (error) {
+        res.send({ok:false})
     }
 }

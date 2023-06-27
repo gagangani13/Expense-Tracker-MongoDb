@@ -1,19 +1,18 @@
-const { INTEGER, STRING, DATE } = require('sequelize')
-const database=require('../database/database')
-module.exports.Download=database.define('download',{
-    id:{
-        type:INTEGER,
-        autoIncrement:true,
-        primaryKey:true,
-        allowNull:false
-    },
+const mongoose=require('mongoose')
+const Schema=mongoose.Schema
+const downloadSchema=new Schema({
     downloadLink:{
-        type:STRING,
-        allowNull:false,
-        unique:true
+        type:String,
+        required:true
     },
     date:{
-        type:DATE,
-        allowNull:false
+        type:Date,
+        required:true
+    },
+    UserId:{
+        type:Schema.Types.ObjectId,
+        required:true,
+        ref:'User'
     }
 })
+module.exports=mongoose.model('Download',downloadSchema)

@@ -1,27 +1,27 @@
-const { INTEGER, STRING, DATE } = require('sequelize');
-const database=require('../database/database');
-const Expense=database.define('Expense',{
-    id:{
-        primaryKey:true,
-        type:INTEGER,
-        autoIncrement:true
-    },
+const mongoose=require('mongoose')
+const Schema=mongoose.Schema
+const expenseSchema=new Schema({
     amount:{
-        allowNull:false,
-        type:INTEGER
+        required:true,
+        type:Number
     },
     description:{
-        allowNull:false,
-        type:STRING
+        required:true,
+        type:String
     },
     category:{
-        allowNull:false,
-        type:STRING
+        required:true,
+        type:String
     },
     date:{
-        allowNull:false,
-        type:STRING
+        required:true,
+        type:Date
+    },
+    UserId:{
+        required:true,
+        type:Schema.Types.ObjectId,
+        ref:'User'
     }
 })
 
-module.exports.Expense=Expense;
+module.exports=mongoose.model('Expense',expenseSchema);
