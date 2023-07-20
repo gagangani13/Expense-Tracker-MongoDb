@@ -84,7 +84,7 @@ module.exports.forgotPassword = async (req, res, next) => {
   const transactEmail = await tranEmailApi.sendTransacEmail({
     sender: sender,
     to: receiver,
-    subject: "Change your password",
+    subject: "Expense Tracker",
     textContent: "You can change your password here",
     htmlContent: `<div><h1>Hello Boss</h1><a href="https://expense-tracker-backend-ndmg.onrender.com/Password/${req.UUID}">Change your password here</a></div>`,
   });
