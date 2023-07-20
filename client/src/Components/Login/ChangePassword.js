@@ -8,7 +8,7 @@ const ChangePassword = () => {
     const params=useParams()
     async function addData(e){
         e.preventDefault();
-        const response=await axios.post(`http://localhost:5000/updatePassword/${params.Id}`,{password:passwordRef.current.value})
+        const response=await axios.post(`https://expense-tracker-backend-ndmg.onrender.com/updatePassword/${params.Id}`,{password:passwordRef.current.value})
         const data=await response.data
         try {
             if (data.ok) {

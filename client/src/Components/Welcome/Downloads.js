@@ -12,7 +12,7 @@ const Downloads = () => {
     // eslint-disable-next-line
   }, []);
   async function viewDownload() {
-    const response = await axios.get("http://localhost:5000/viewDownloads", {
+    const response = await axios.get("https://expense-tracker-backend-ndmg.onrender.com/viewDownloads", {
       headers: { Authorization: idToken },
     });
     const data = await response.data;

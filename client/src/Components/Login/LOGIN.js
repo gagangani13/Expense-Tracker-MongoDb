@@ -35,7 +35,7 @@ const LOGIN = () => {
     e.preventDefault();
     if (!login) {
       if (passwordRef.current.value === confirmRef.current.value) {
-        const response = await axios.post('http://localhost:5000/newUser',{email:emailRef.current.value,password:passwordRef.current.value,name:nameRef.current.value})
+        const response = await axios.post('https://expense-tracker-backend-ndmg.onrender.com/newUser',{email:emailRef.current.value,password:passwordRef.current.value,name:nameRef.current.value})
         const data = await response.data;
         try {
           if (response) {
@@ -55,7 +55,7 @@ const LOGIN = () => {
         alert("Password not matching");
       }
     } else if (login && newPassword) {
-      const response = await axios.post('http://localhost:5000/forgotPassword',{email:emailRef.current.value});
+      const response = await axios.post('https://expense-tracker-backend-ndmg.onrender.com/forgotPassword',{email:emailRef.current.value});
       const data = await response.data;
       try {
         if (data.ok) {
@@ -69,7 +69,7 @@ const LOGIN = () => {
       }
       alert(data.message);
     } else {
-      const response = await axios.post('http://localhost:5000/loginUser',{email:emailRef.current.value,password:passwordRef.current.value})
+      const response = await axios.post('https://expense-tracker-backend-ndmg.onrender.com/loginUser',{email:emailRef.current.value,password:passwordRef.current.value})
 
       const data = await response.data;
       try {
@@ -82,7 +82,7 @@ const LOGIN = () => {
           dispatch(authAction.loginHandler());
           dispatch(authAction.setToken(token));
           dispatch(authAction.setUserId(userId));
-          dispatch(authAction.setActivatePremium(JSON.parse(premium)))
+          dispatch(authAction.setActivatePremium(premium))
         } else {
           throw new Error();
         }

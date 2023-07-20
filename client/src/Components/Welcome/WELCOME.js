@@ -44,7 +44,7 @@ const WELCOME = () => {
   const activatePremium = useSelector(
     (state) => state.authenticate.activatePremium
   );
-  const idToken = useSelector((state) => state.authenticate.idToken);
+  const idToken = localStorage.getItem('idToken')
   const dispatch = useDispatch();
   const [leaderboard, setLeaderboard] = useState(false);
   const [viewDownloads, setViewDownloads] = useState(false);
@@ -65,7 +65,7 @@ const WELCOME = () => {
     e.preventDefault();
     if (!activatePremium) {
       const response = await axios.get(
-        "http://localhost:5000/purchasePremium",
+        "https://expense-tracker-backend-ndmg.onrender.com/purchasePremium",
         { headers: { Authorization: idToken } }
       );
       const data = await response.data;
@@ -77,7 +77,7 @@ const WELCOME = () => {
           amount: data.order.amount,
           handler: async (response) => {
             const response2 = await axios.post(
-              "http://localhost:5000/updateTransactionStatus",
+              "https://expense-tracker-backend-ndmg.onrender.com/updateTransactionStatus",
               {
                 orderId: options.orderId,
                 paymentId: response.razorpay_payment_id,
@@ -123,7 +123,7 @@ const WELCOME = () => {
   }
   async function downloadExpenses(e) {
     setMenu(false)
-    const response = await axios.get("http://localhost:5000/downloadAWS", {
+    const response = await axios.get("https://expense-tracker-backend-ndmg.onrender.com/downloadAWS", {
       headers: { Authorization: idToken },
     });
     const data = await response.data;
@@ -142,7 +142,7 @@ const WELCOME = () => {
     setMenu(!menu);
   }
   async function verifyPremium() {
-    const response=await axios.get(`http://localhost:5000/verifyPremium`,{headers:{'Authorization':idToken}})
+    const response=await axios.get(`https://expense-tracker-backend-ndmg.onrender.com/verifyPremium`,{headers:{'Authorization':idToken}})
     const data=await response.data
     try {
       if(!data.ok){
@@ -237,7 +237,6 @@ const WELCOME = () => {
               {!menu&&addExpense && <ExpenseForm />}
               {!menu&&leaderboard && <Leaderboard />}
               {!menu&&viewDownloads && <Downloads />}
-              {console.log(activatePremium)}
             </>
           </>
         )}
