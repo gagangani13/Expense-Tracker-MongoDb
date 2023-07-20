@@ -23,7 +23,7 @@ module.exports.validateForgotPasswordLink=async(req,res,next)=>{
         const UUID=req.params.Id
         const findPassword=await ForgotPassword.findOne({_id:UUID})
         if (findPassword.isActive==1||null){
-            res.redirect(`https://gagan-expense-tracker-mongo-db.vercel.app//Password/${UUID}`)
+            res.redirect(`https://gagan-expense-tracker-mongo-db.vercel.app/Password/${UUID}`)
         }else{
             res.send('<h1>The link has been expired. Please request via <a href="https://gagan-expense-tracker-mongo-db.vercel.app/">Expense Tracker</a></h1>')
         }
