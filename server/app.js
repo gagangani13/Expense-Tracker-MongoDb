@@ -17,7 +17,7 @@ app.use(router)
 
 //wrongUrl
 app.use('/',(req,res)=>{
-    res.redirect('https://gagan-expense-tracker-mongo-db.vercel.app/')
+    res.redirect('https://gagan-expense-tracker.vercel.app/')
 })
 
 mongoose.connect(`mongodb+srv://gagangani17:${process.env.MONGODB_PASSWORD}@expensetracker.gfsce6y.mongodb.net/master?retryWrites=true&w=majority`).then(res=>app.listen(process.env.PORT)).catch(err=>console.log(err))

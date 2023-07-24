@@ -179,7 +179,7 @@ const LOGIN = () => {
                 </Button>
               )}
               {newPassword && (
-                <Button className="mb-3" variant="primary" type="submit">
+                <Button className="mb-3" variant="dark" type="submit">
                   SEND LINK
                 </Button>
               )}
