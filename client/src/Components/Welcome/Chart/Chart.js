@@ -76,9 +76,8 @@ const Chart = () => {
       link.setAttribute('href',url)
       link.setAttribute('download','Expenses.xlsx')
       link.click()
-      document.getElementById("ExpenseTracker").removeChild(link)
     } catch (error) {
-      alert('Download failed')
+      console.log(error);
     }
   }
 
