@@ -1,11 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import "./Leaderboard.css";
 import { motion } from "framer-motion";
+import { convertToShortNumber } from "../Add/ExpenseForm";
+import { useSelector } from "react-redux";
 const Leaderboard = () => {
   const [expenses, loadExpenses] = useState([]);
-  const idToken = useSelector((state) => state.authenticate.idToken);
+  const idToken = localStorage.getItem("idToken");
+  const premium=useSelector(state=>state.authenticate.activatePremium)
+  const login=useSelector(state=>state.authenticate.login)
   async function leaderboardExpenses() {
     const response = await axios.get("https://expense-tracker-backend-ndmg.onrender.com/allExpenses", {
       headers: { Authorization: idToken },
@@ -32,7 +35,8 @@ const Leaderboard = () => {
     // eslint-disable-next-line
   }, []);
   return (
-    <motion.div
+    <>
+   { login&&premium&&<motion.div
       id="leaderboard"
       initial={{ opacity: 0, x: "-100vw" }}
       animate={{ opacity: 1, x: 0 }}
@@ -42,7 +46,7 @@ const Leaderboard = () => {
       <li id="listItem">
         <span id="spanLeaderboard">Rank</span>
         <span id="spanLeaderboard">User</span>
-        <span id="spanLeaderboard">Total</span>
+        <span id="spanLeaderboard">&#8377;</span>
       </li>
       {expenses.map((item) => {
         return (
@@ -54,11 +58,12 @@ const Leaderboard = () => {
           >
             <span id="spanLeaderboard">{item.order}</span>
             <span id="spanLeaderboard">{item.name}</span>
-            <span id="spanLeaderboard">{item.totalExpense}</span>
+            <span id="spanLeaderboard">{convertToShortNumber(item.totalExpense)}</span>
           </motion.li>
         );
       })}
-    </motion.div>
+    </motion.div>}
+    </>
   );
 };
 

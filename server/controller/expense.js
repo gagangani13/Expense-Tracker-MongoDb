@@ -2,16 +2,19 @@ const Expense = require("../model/expense");
 const User = require("../model/user");
 
 module.exports.addExpense = async (req, res, next) => {
-  const { amount, description, category, date } = req.body;
-  if (!amount || !description || !category || !date) {
+  let { amount, description, category, date,types } = req.body;
+  if (!amount || !description || !category || !date|| !types) {
     return res.status(400).send({ message: "Invalid input" });
+  }
+  if(types!=='Savings'){
+    amount=-amount
   }
   try {
     const addExpense = new Expense({
-      amount: amount,
-      description: description,
-      category: category,
-      date: date,
+      amount,
+      description,
+      category,
+      date,
       UserId: req.userId,
     });
     const addedExpense = await addExpense.save();
@@ -79,18 +82,21 @@ module.exports.deleteExpense=async(req,res,next)=>{
 module.exports.editExpense=async(req,res,next)=>{
     try {
         const Id=req.params.Id
-        const{amount,description,date,category}=req.body
-        if(!amount||!description||!date||!category){
+        let{amount,description,date,category,types}=req.body
+        if(!amount||!description||!date||!category||!types){
             throw new Error('Invalid input')
+        }
+        if(types!=='Savings'){
+          amount=-amount
         }
         const getExpense=await Expense.findById(Id)
         const getUser=await User.findById(getExpense.UserId)
         const oldExpense=Number(getUser.totalExpense)-Number(getExpense.amount)
         const updateExpense=await getExpense.updateOne({
-            amount:amount,
-            date:date,
-            category:category,
-            description:description
+            amount,
+            date,
+            category,
+            description
         })
         const updateUser=await getUser.updateOne({totalExpense:oldExpense+Number(amount)})
         try {

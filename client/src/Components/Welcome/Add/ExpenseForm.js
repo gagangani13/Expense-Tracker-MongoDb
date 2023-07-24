@@ -1,30 +1,48 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { expenseAction } from "../Store/expenseSlice";
+import { expenseAction } from "../../Store/expenseSlice";
 import "./expenseForm.css";
 import axios from "axios";
 import Paginate from "./Paginate";
 import { motion } from "framer-motion";
 import Loader from "./Loader";
-import DateFormat from "./DateFormat";
+import DateFormat from "../DateFormat/DateFormat";
 
 var pageData = {};
 var pageSize = localStorage.getItem("size") || 2;
 var currPage = localStorage.getItem("currentPage") || 1;
+
+export function convertToShortNumber(num) {
+  const absNum = Math.abs(num);
+
+  if (absNum >= 1e12) {
+    return (num / 1e12).toFixed(1) + "T";
+  } else if (absNum >= 1e9) {
+    return (num / 1e9).toFixed(1) + "B";
+  } else if (absNum >= 1e6) {
+    return (num / 1e6).toFixed(1) + "M";
+  } else if (absNum >= 1e3) {
+    return (num / 1e3).toFixed(1) + "K";
+  }
+
+  return num.toString();
+}
+
 const ExpenseForm = () => {
   const dispatch = useDispatch();
   const expenses = useSelector((state) => state.expenseList.expenses);
   const editing = useSelector((state) => state.expenseList.editing);
-  const userId = useSelector((state) => state.authenticate.userId);
   const token = useSelector((state) => state.authenticate.idToken);
+  const login=useSelector(state=>state.authenticate.login)
   const [load, setLoad] = useState(false);
   const amountRef = useRef();
   const descriptionRef = useRef();
   const categoryRef = useRef();
   const dateRef = useRef();
+  const typeRef=useRef();
+  
   useEffect(() => {
-    console.log(currPage, pageSize);
     document.getElementById("pageSize").value = pageSize;
     getExpenses(currPage, pageSize);
     // eslint-disable-next-line
@@ -73,6 +91,7 @@ const ExpenseForm = () => {
       description: descriptionRef.current.value,
       category: categoryRef.current.value,
       date: dateRef.current.value,
+      types:typeRef.current.value
     };
     if (editing === null) {
       const response = await axios.post(
@@ -97,18 +116,19 @@ const ExpenseForm = () => {
     } else {
       const response = await axios.put(
         `https://expense-tracker-backend-ndmg.onrender.com/editExpense/${editing}`,
-        details
+        details,{
+          headers: { Authorization: token },
+        }
       );
       const data = await response.data;
       try {
         setLoad(false);
         if (data.ok) {
           const editArray = expenses.map((item) => {
-            console.log(item.expenseId, editing);
             if (item.expenseId === (editing)) {
               return {
                 expenseId: editing,
-                amount: amountRef.current.value,
+                amount: typeRef.current.value==='Savings'?amountRef.current.value:-amountRef.current.value,
                 description: descriptionRef.current.value,
                 category: categoryRef.current.value,
                 date: dateRef.current.value,
@@ -130,7 +150,6 @@ const ExpenseForm = () => {
   async function deleteExpense(e) {
     setLoad(true);
     const key = e.target.parentElement.id;
-    console.log(userId, key);
     const response = await axios.delete(
       `https://expense-tracker-backend-ndmg.onrender.com/deleteExpense/${key}`,
       { headers: { Authorization: token } }
@@ -151,15 +170,18 @@ const ExpenseForm = () => {
   async function editExpense(e) {
     setLoad(true);
     const key = e.target.parentElement.id;
-    const response = await axios.get(`https://expense-tracker-backend-ndmg.onrender.com/getExpense/${key}`);
+    const response = await axios.get(`https://expense-tracker-backend-ndmg.onrender.com/getExpense/${key}`,{
+      headers: { Authorization: token },
+    });
     const data = await response.data;
     try {
       setLoad(false);
       if (data.ok) {
-        amountRef.current.value = data.expense.amount;
+        amountRef.current.value = Math.abs(data.expense.amount);
         descriptionRef.current.value = data.expense.description;
         categoryRef.current.value = data.expense.category;
         dateRef.current.value = data.expense.date;
+        typeRef.current.value=''
         dispatch(expenseAction.editExpense(key));
       } else {
         throw new Error();
@@ -173,19 +195,21 @@ const ExpenseForm = () => {
     descriptionRef.current.value = "";
     categoryRef.current.value = "";
     dateRef.current.value = "";
+    typeRef.current.value = "";
   }
   function cancelUpdate() {
     emptyForm();
     dispatch(expenseAction.editExpense(null));
   }
   return (
-    <motion.div
+    <>
+    {login&&<motion.div
       className="welcomeLayout"
       initial={{ opacity: 0, x: "-100vw" }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ type: "spring", stiffness: 100 }}
     >
-      <h3>ADD EXPENSES</h3>
+      <h3>EXPENSES & SAVINGS</h3>
       <Form className="form" onSubmit={addExpenses}>
         <Form.Control
           placeholder="Amount"
@@ -203,7 +227,6 @@ const ExpenseForm = () => {
 
         <Form.Control
           type="date"
-          name="dob"
           placeholder="Date of Expense"
           ref={dateRef}
           required
@@ -213,6 +236,11 @@ const ExpenseForm = () => {
           <option>Me</option>
           <option>Family</option>
           <option>Friends</option>
+        </Form.Select>
+
+        <Form.Select defaultValue="Savings" ref={typeRef} required>
+          <option>Savings</option>
+          <option>Expense</option>
         </Form.Select>
 
         <Button variant="dark" type="submit">
@@ -228,17 +256,17 @@ const ExpenseForm = () => {
         {load && <Loader />}
         {editing === null &&
           expenses.map((item) => {
-            console.log(item);
+
             return (
               <motion.li
                 id={item.expenseId}
-                className="expenseItem"
+                className={item.amount<=0?"expenseItem":"savingItem"}
                 initial={{ scale: 1 }}
                 whileHover={{ x: 0, scale: 1.1 }}
                 transition={{ type: "just", stiffness: 20 }}
               >
                 <DateFormat date={new Date(item.date)} />
-                <span>Rs.{item.amount} </span>
+                <span>&#8377; {convertToShortNumber(item.amount)} </span>
                 <span>{item.description} </span>
                 <span>{item.category}</span>
 
@@ -261,7 +289,7 @@ const ExpenseForm = () => {
               duration: 2,
             }}
           >
-            No expenses to show
+            No expenses or savings to show
           </motion.h3>
         )}
       </>
@@ -270,7 +298,8 @@ const ExpenseForm = () => {
         onChangePage={getExpenses}
         onChangeSize={getExpenses}
       />
-    </motion.div>
+    </motion.div>}
+    </>
   );
 };
 

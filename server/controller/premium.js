@@ -2,20 +2,11 @@ const  Download = require("../model/download")
 const  Expense = require("../model/expense")
 const  User = require("../model/user")
 const AWS=require('aws-sdk');
+const excelJS = require("exceljs");
 require('dotenv').config();
 //Leaderboard
 module.exports.getAllExpenses=async(req,res,next)=>{
     try {
-        //Optimization
-        // const allExpenses=await User.findAll({
-        //     attributes:['id','name',[database.fn('sum',database.col('expenses.amount')),'totalAmount']], //fn(method,table col,new name)
-        //     include:[{
-        //         model:Expense,
-        //         attributes:[]
-        //     }],
-        //     group:['user.id'], //Grouped according to id column in users table
-        //     order:[['totalAmount','DESC']] // Descending order related to totalAmount value
-        // })
         const allExpenses=await User.find().select('name totalExpense').sort({totalExpense:-1})
         res.status(200).send({expenses:allExpenses})
 
@@ -26,53 +17,79 @@ module.exports.getAllExpenses=async(req,res,next)=>{
     
 }
 
-async function uploadToS3(data,filename) {
-    const BUCKET_NAME=process.env.AWS_S3_NAME 
-    const IAM_USER_KEY=process.env.IAM_USER_KEY
-    const IAM_USER_SECRET=process.env.IAM_USER_SECRET
-    try {
-        let s3bucket=new AWS.S3({
-            accessKeyId:IAM_USER_KEY,
-            secretAccessKey:IAM_USER_SECRET,
-        })
-        var params={
-            Bucket:BUCKET_NAME,
-            Body:data,
-            Key:filename,
-            ACL:'public-read'
+
+module.exports.downloadExpense = async (req, res) => {
+  const BUCKET_NAME = process.env.AWS_S3_NAME;
+  const IAM_USER_KEY = process.env.IAM_USER_KEY;
+  const IAM_USER_SECRET = process.env.IAM_USER_SECRET;
+  const s3 = new AWS.S3({
+    accessKeyId: IAM_USER_KEY,
+    secretAccessKey: IAM_USER_SECRET,
+  });
+  try {
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Expenses');
+    worksheet.columns = [
+      { header: 'Sl.No', key: 'slNo' },
+      { header: 'Amount', key: 'amount' },
+      { header: 'Description', key: 'description' },
+      { header: 'Category', key: 'category' },
+      { header: 'Date', key: 'date' },
+    ];
+
+    const getExpenses = await Expense.find({ UserId: req.userId }).sort({
+      date: -1,
+    });
+    const dataWithSlNo = getExpenses.map((data, index) => ({
+      ...data.toJSON(),
+      slNo: index + 1,
+    }));
+
+    dataWithSlNo.forEach((data) => {
+      worksheet.addRow(data);
+    });
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: `Expenses/${req.userId}/${new Date().toISOString()}.xlsx`,
+      Body: buffer,
+      ACL: 'public-read',
+      ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    };
+
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        console.error(err);
+        res.send({ ok: false, error: 'Upload to S3 Failed!' });
+      } else {
+        try {
+          const downloadTable = new Download({
+            downloadLink: data.Location,
+            UserId: req.userId,
+            date: new Date(),
+          });
+          await downloadTable.save();
+          res.send({
+            ok: true,
+            message: 'File uploaded successfully to S3',
+            s3Url: data.Location,
+          });
+        } catch (error) {
+          console.error(error);
+          res.send({ ok: false, error: 'Upload Failed!' });
         }
-        return new Promise((resolve,reject)=>{
-            s3bucket.upload(params,(err,result)=>{
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(result.Location)   
-                }
-            })
-        });
-    } catch (error) {
-        res.send({message:error,ok:false})
-    }
-}
-
-module.exports.downloadAWS=async(req,res,next)=>{
-    try {
-        const getExpenses=await Expense.find({UserId:req.userId})
-        const stringifyExpense=JSON.stringify(getExpenses)
-        const filename=`Expenses/${req.userId}/${new Date()}.txt`
-        const fileUrl=await uploadToS3(stringifyExpense,filename)
-        const downloadTable=new Download({
-            downloadLink:fileUrl,
-            UserId:req.userId,
-            date:new Date()
-        })
-        const save=await downloadTable.save()
-        res.status(200).send({ok:true,fileUrl,stringifyExpense})
-    } catch (error) {
-        res.send({message:error,ok:false})
-    }
-}
-
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.send({ ok: false, error: 'Download Failed!' });
+  }
+};
 module.exports.viewDownloads=async(req,res,next)=>{
     try {
         const downloads=await Download.find({UserId:req.userId}).sort({date:-1})

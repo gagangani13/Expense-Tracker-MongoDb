@@ -1,14 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Geologica:wght@300&family=Orbitron:wght@500&display=swap');
 .form{
     margin: 1rem 0rem;
-    background: linear-gradient(45deg, black, #901e1e);
+    background: linear-gradient(45deg, #4b0404, #1f5704);
     padding: 1rem;
     border-radius: 5px;
     color: black;
     display: grid;
-    grid-template-columns: 10vw auto auto 10vw auto auto;
-    column-gap: 5px;
+    grid-template-columns: auto auto;
+    column-gap: 10px;
+    row-gap: 5px;
 }
+
 
 .welcomeLayout{
     position: absolute;
@@ -25,10 +27,21 @@ h3{
 }
 
 .expenseItem{
-    background: linear-gradient(45deg, black, #b64f4f);
+    background: linear-gradient(45deg, black, #e10d0d);
     color: bisque;
     display: grid;
-    grid-template-columns: 10vw 5vw  30vw 5vw auto auto;
+    grid-template-columns: 10vw 10vw  30vw 5vw auto auto;
+    text-align: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.savingItem{
+    background: linear-gradient(45deg, black, #3cbe06);
+    color: bisque;
+    display: grid;
+    grid-template-columns: 10vw 10vw  30vw 5vw auto auto;
     text-align: center;
     justify-content: space-between;
     margin-bottom: 5px;
@@ -47,21 +60,15 @@ h3{
         grid-template-columns: auto;
         row-gap: 10px;
     }
-    .expenseItem{
+    .expenseItem, .savingItem{
         grid-template-columns: auto auto  auto auto auto auto;
     }
 }
 
 @media screen and (max-width:500px) {
-    .expenseItem{
-        background: linear-gradient(45deg, black, #b64f4f);
-        color: bisque;
-        display: grid;
+    .expenseItem, .savingItem{
         grid-template-columns: auto;
-        text-align: center;
         justify-content: center;
-        margin-bottom: 5px;
-        padding: 5px;
         row-gap: 1rem;
     }
     .button{

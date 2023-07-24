@@ -76,13 +76,13 @@ const LOGIN = () => {
         if (data.ok) {
           emailRef.current.value = "";
           passwordRef.current.value = "";
-          const token = localStorage.setItem("idToken", data.idToken);
-          const userId = localStorage.setItem("userId", data.emailId);
-          const premium=localStorage.setItem('premium',data.premium)
+          localStorage.setItem("idToken", data.idToken);
+          localStorage.setItem("userId", data.emailId);
+          localStorage.setItem('premium',data.premium)
           dispatch(authAction.loginHandler());
-          dispatch(authAction.setToken(token));
-          dispatch(authAction.setUserId(userId));
-          dispatch(authAction.setActivatePremium(premium))
+          dispatch(authAction.setToken(data.idToken));
+          dispatch(authAction.setUserId(data.emailId));
+          dispatch(authAction.setActivatePremium(data.premium))
         } else {
           throw new Error();
         }
@@ -92,7 +92,12 @@ const LOGIN = () => {
     }
   }
   return (
-    <>
+    <motion.div
+          animate={{ y: 0 }}
+          initial={{ y: "100vh" }}
+          transition={{ type: "tween", duration: 1 }}
+          id="loginPage"
+        >
       <div id="webpage"></div>
       <div>
         <motion.h1 initial={{opacity:0}} animate={{opacity:1,}} transition={{repeat:Infinity,repeatType:"reverse",duration:3,type:'spring'}} id="loginH1">Expense Tracker</motion.h1>
@@ -169,7 +174,7 @@ const LOGIN = () => {
                 </NavLink>
               )}
               {!newPassword && (
-                <Button className="mb-3" variant="primary" type="submit">
+                <Button className="mb-3" variant="dark" type="submit">
                   {login ? "LOGIN" : "SIGN UP"}
                 </Button>
               )}
@@ -196,13 +201,13 @@ const LOGIN = () => {
             </Form>
             {loginState && (
               <Route>
-                <Redirect to="/WELCOME" />
+                <Redirect to="/add" />
               </Route>
             )}
           </div>
         </div>
       </div>
-    </>
+    </motion.div>
   );
 };
 

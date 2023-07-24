@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./Downloads.css";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import DateFormat from "./DateFormat";
+import DateFormat from "../DateFormat/DateFormat";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 const Downloads = () => {
-  const idToken = useSelector((state) => state.authenticate.idToken);
+  const idToken = localStorage.getItem('idToken')
+  const premium=useSelector(state=>state.authenticate.activatePremium)
+  const login=useSelector(state=>state.authenticate.login)
   const [downloads, setDownloads] = useState([]);
   useEffect(() => {
     viewDownload();
@@ -30,11 +32,11 @@ const Downloads = () => {
       }
       setDownloads(arr);
     } catch (error) {
-      alert(data.message);
+      console.log(data.message);
     }
   }
   return (
-      <motion.div
+    <> {login&&premium&& <motion.div
         className="downloads"
         initial={{ opacity: 0, x: "-100vw" }}
         animate={{ opacity: 1, x: 0 }}
@@ -56,7 +58,7 @@ const Downloads = () => {
             </motion.li>
           );
         })}
-      </motion.div>
+      </motion.div>}</>
   );
 };
 
