@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { authAction } from "../../Store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink, Redirect, Route } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./Header.css";
 import axios from "axios";
 import { expenseAction } from "../../Store/expenseSlice";
@@ -226,7 +226,6 @@ const Header = () => {
           </header>
         </>
       )}
-      {!login&&<Route><Redirect to='/'/></Route>}
     </>
   );
 };
