@@ -9,7 +9,7 @@ function userEncrypt(id) {
 }
 
 module.exports.newUser = async (req, res, next) => {
-  if (!req.body.email || !req.body.password) {
+  if (!req.body.email || !req.body.password||!req.body.name) {
     return res.status(400).json({ err: "Invalid Input" });
   }
   try {
@@ -31,7 +31,7 @@ module.exports.newUser = async (req, res, next) => {
       res.status(201).json({ message: "User Added" });
     });
   } catch (error) {
-    res.status(500).send({ message: "User Exists" });
+    res.send({ message: "User Exists" });
   }
 };
 

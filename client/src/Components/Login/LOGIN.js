@@ -49,7 +49,7 @@ const LOGIN = () => {
             throw new Error(data.message);
           }
         } catch (error) {
-          console.log(error.message)
+          alert(error.message)
         }
       } else {
         alert("Password not matching");
