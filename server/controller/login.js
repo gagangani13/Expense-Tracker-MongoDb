@@ -9,27 +9,23 @@ function userEncrypt(id) {
 }
 
 module.exports.newUser = async (req, res, next) => {
-  if (!req.body.email || !req.body.password||!req.body.name) {
+  if (!req.body.email || !req.body.password || !req.body.name) {
     return res.status(400).json({ err: "Invalid Input" });
   }
   try {
     const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
-    bcrypt.hash(password, 10, async (err, result) => {
-      if (err) {
-        throw new Error();
-      }
-      const createUser = new User({
-        email: email,
-        password: result,
-        name: name,
-        totalExpense: 0,
-        premium: false,
-      });
-      await createUser.save();
-      res.status(201).json({ message: "User Added" });
+    const result = await bcrypt.hash(password, 10);
+    const createUser = new User({
+      email: email,
+      password: result,
+      name: name,
+      totalExpense: 0,
+      premium: false,
     });
+    await createUser.save();
+    res.status(201).json({ message: "User Added" });
   } catch (error) {
     res.send({ message: "User Exists" });
   }
